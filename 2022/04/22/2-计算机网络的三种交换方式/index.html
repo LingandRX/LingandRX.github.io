@@ -20,22 +20,22 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"lingandrx.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.11.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="三种交换方式电路交换(Circuit Switching) 电话交换机接通电话线的方式称为电路交换 从通信资源的分配角度来看，交换(Switching)就是按照某种方式动态分配传输线路的资源 电路交换的三个步骤 建立连接(分配通信资源) 通话(一直占用通信资源) 释放连接(归还通信资源)     当使用电路交换来传送计算机数据时，其线路的传输效率往往很低 n个用户进行电路交换通信需要n(n-1)&amp;">
+    <meta name="description" content="三种交换方式电路交换(Circuit Switching) 电话交换机接通电话线的方式称为电路交换 从通信资源的分配角度来看，交换(Switching)就是按照某种方式动态分配传输线路的资源 电路交换的三个步骤 建立连接(分配通信资源) 通话(一直占用通信资源) 释放连接(归还通信资源)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2.计算机网络的三种交换方式">
 <meta property="og:url" content="https://lingandrx.github.io/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/index.html">
 <meta property="og:site_name" content="冰山撞上了泰坦尼克">
-<meta property="og:description" content="三种交换方式电路交换(Circuit Switching) 电话交换机接通电话线的方式称为电路交换 从通信资源的分配角度来看，交换(Switching)就是按照某种方式动态分配传输线路的资源 电路交换的三个步骤 建立连接(分配通信资源) 通话(一直占用通信资源) 释放连接(归还通信资源)     当使用电路交换来传送计算机数据时，其线路的传输效率往往很低 n个用户进行电路交换通信需要n(n-1)&amp;">
+<meta property="og:description" content="三种交换方式电路交换(Circuit Switching) 电话交换机接通电话线的方式称为电路交换 从通信资源的分配角度来看，交换(Switching)就是按照某种方式动态分配传输线路的资源 电路交换的三个步骤 建立连接(分配通信资源) 通话(一直占用通信资源) 释放连接(归还通信资源)">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lingandrx.github.io/%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2.png">
-<meta property="og:image" content="https://lingandrx.github.io/%E5%AD%98%E5%82%A8%E8%BD%AC%E5%8F%91.png">
-<meta property="og:image" content="https://lingandrx.github.io/%E4%B8%89%E7%A7%8D%E6%8A%A5%E6%96%87%E4%BA%A4%E6%8D%A2%E6%AF%94%E8%BE%83.png">
+<meta property="og:image" content="https://lingandrx.github.io/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2.png">
+<meta property="og:image" content="https://lingandrx.github.io/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/%E5%AD%98%E5%82%A8%E8%BD%AC%E5%8F%91.png">
+<meta property="og:image" content="https://lingandrx.github.io/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/%E4%B8%89%E7%A7%8D%E6%8A%A5%E6%96%87%E4%BA%A4%E6%8D%A2%E6%AF%94%E8%BE%83.png">
 <meta property="article:published_time" content="2022-04-22T14:24:55.000Z">
-<meta property="article:modified_time" content="2022-04-23T00:59:29.115Z">
+<meta property="article:modified_time" content="2022-04-23T02:44:17.184Z">
 <meta property="article:author" content="LingandRX">
 <meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lingandrx.github.io/%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2.png">
+<meta name="twitter:image" content="https://lingandrx.github.io/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2.png">
 
 
 <link rel="canonical" href="https://lingandrx.github.io/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/">
@@ -206,7 +206,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-04-23 08:59:29" itemprop="dateModified" datetime="2022-04-23T08:59:29+08:00">2022-04-23</time>
+      <time title="修改时间：2022-04-23 10:44:17" itemprop="dateModified" datetime="2022-04-23T10:44:17+08:00">2022-04-23</time>
     </span>
 
   
@@ -229,20 +229,22 @@
 </ol>
 </li>
 </ul>
+<span id="more"></span>
+
 <hr>
 <p>当使用电路交换来传送计算机数据时，其线路的传输效率往往很低</p>
 <p>n个用户进行电路交换通信需要n(n-1)&#x2F;2条线路</p>
-<p><img src="/%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2.png" alt="电路交换"></p>
+<p><img src="/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2.png" alt="电路交换"></p>
 <h5 id="分组交换-Packet-Switching"><a href="#分组交换-Packet-Switching" class="headerlink" title="分组交换(Packet Switching)"></a>分组交换(Packet Switching)</h5><ul>
 <li>分组交换采用<strong>存储转发</strong>技术。实质上是采用了在数据通信的过程中断续（或动态）分配传输带宽的策略（<strong>断续分配传输带宽</strong>）</li>
 <li>将<strong>报文</strong>分成更小的等长的数据段，每一个数据段加上一些<strong>控制信息（诸如目的地址和原地址等）</strong>后组成<strong>首部（header）</strong>，构成一个<strong>分组（packet）</strong>。分组又称为“<strong>包</strong>”，分组的首部也可称为“<strong>包头</strong>”</li>
 </ul>
 <hr>
-<p><img src="/%E5%AD%98%E5%82%A8%E8%BD%AC%E5%8F%91.png" alt="存储转发"></p>
+<p><img src="/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/%E5%AD%98%E5%82%A8%E8%BD%AC%E5%8F%91.png" alt="存储转发"></p>
 <h5 id="报文交换-Message-Switching"><a href="#报文交换-Message-Switching" class="headerlink" title="报文交换(Message Switching)"></a>报文交换(Message Switching)</h5><ul>
 <li>报文交换(Message Switching)也是基于<strong>存储转发</strong>原理的。现在报文交换机已不再使用</li>
 </ul>
-<h4 id="电路交换、报文交换、分组交换的比较"><a href="#电路交换、报文交换、分组交换的比较" class="headerlink" title="电路交换、报文交换、分组交换的比较"></a>电路交换、报文交换、分组交换的比较</h4><p><img src="/%E4%B8%89%E7%A7%8D%E6%8A%A5%E6%96%87%E4%BA%A4%E6%8D%A2%E6%AF%94%E8%BE%83.png" alt="三种报文交换比较"></p>
+<h4 id="电路交换、报文交换、分组交换的比较"><a href="#电路交换、报文交换、分组交换的比较" class="headerlink" title="电路交换、报文交换、分组交换的比较"></a>电路交换、报文交换、分组交换的比较</h4><p><img src="/2022/04/22/2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F/%E4%B8%89%E7%A7%8D%E6%8A%A5%E6%96%87%E4%BA%A4%E6%8D%A2%E6%AF%94%E8%BE%83.png" alt="三种报文交换比较"></p>
 <h5 id="电路交换"><a href="#电路交换" class="headerlink" title="电路交换"></a>电路交换</h5><ul>
 <li>优点<ol>
 <li>通信时延小</li>
