@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>自建frp服务</title>
+    <link href="/2024/06/23/LINUX/%E8%87%AA%E5%BB%BAfrp%E6%9C%8D%E5%8A%A1/"/>
+    <url>/2024/06/23/LINUX/%E8%87%AA%E5%BB%BAfrp%E6%9C%8D%E5%8A%A1/</url>
+    
+    <content type="html"><![CDATA[<h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p><a href="https://github.com/fatedier/frp">Frp链接</a><br><a href="https://gofrp.org/zh-cn/docs/">Frp中文文档</a></p><ol><li>安装</li><li>配置</li></ol><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="解压Frp工具包"><a href="#解压Frp工具包" class="headerlink" title="解压Frp工具包"></a>解压Frp工具包</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 下载链接:https://github.com/fatedier/frp/releases</span><br>wget https://github.com/fatedier/frp/releases/download/v0.58.1/frp_0.58.1_linux_amd64.tar.gz<br><span class="hljs-comment"># 解压</span><br>tar -zxvf frp_0.58.1_linux_amd64.tar.gz /usr/local/frp<br><br><span class="hljs-comment"># 使用 yum 安装 systemd（CentOS/RHEL）</span><br>yum install systemd<br><br><span class="hljs-comment"># 使用 apt 安装 systemd（Debian/Ubuntu）</span><br>apt install systemd<br></code></pre></td></tr></table></figure><h3 id="创建frps-service服务"><a href="#创建frps-service服务" class="headerlink" title="创建frps.service服务"></a>创建frps.service服务</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 创建service文件,用于管理frps服务</span><br>sudo vim /etc/systemd/system/frps.service<br></code></pre></td></tr></table></figure><p><code>frps.service</code>:</p><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-section">[Unit]</span><br><span class="hljs-comment"># 服务名称，可自定义</span><br><span class="hljs-attr">Description</span> = frp server<br><span class="hljs-attr">After</span> = network.target syslog.target<br><span class="hljs-attr">Wants</span> = network.target<br><br><span class="hljs-section">[Service]</span><br><span class="hljs-attr">Type</span> = simple<br><span class="hljs-comment"># 启动frps的命令，需修改为您的frps的安装路径</span><br><span class="hljs-attr">ExecStart</span> = /usr/local/frp/frps -c /usr/local/frp/frps.toml<br><br><span class="hljs-section">[Install]</span><br><span class="hljs-attr">WantedBy</span> = multi-user.target<br></code></pre></td></tr></table></figure><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 启动frp</span><br>sudo systemctl start frps<br><span class="hljs-comment"># 停止frp</span><br>sudo systemctl stop frps<br><span class="hljs-comment"># 重启frp</span><br>sudo systemctl restart frps<br><span class="hljs-comment"># 查看frp状态</span><br>sudo systemctl status frps<br><span class="hljs-comment"># 开启自启动</span><br>sudo systemctl <span class="hljs-built_in">enable</span> frps<br></code></pre></td></tr></table></figure><h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="通过自定义域名访问内网的-Web-服务"><a href="#通过自定义域名访问内网的-Web-服务" class="headerlink" title="通过自定义域名访问内网的 Web 服务"></a>通过自定义域名访问内网的 Web 服务</h3><p><code>frps.toml</code></p><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs toml"><span class="hljs-attr">bindPort</span> = <span class="hljs-number">7000</span><br><span class="hljs-attr">vhostHTTPPort</span> = <span class="hljs-number">8080</span><br></code></pre></td></tr></table></figure><p><code>frpc.toml</code></p><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs toml"><span class="hljs-attr">serverAddr</span> = <span class="hljs-string">&quot;x.x.x.x&quot;</span><br><span class="hljs-attr">serverPort</span> = <span class="hljs-number">7000</span><br><br><span class="hljs-section">[[proxies]]</span><br><span class="hljs-attr">name</span> = <span class="hljs-string">&quot;web&quot;</span><br><span class="hljs-attr">type</span> = <span class="hljs-string">&quot;http&quot;</span><br><span class="hljs-attr">localPort</span> = <span class="hljs-number">80</span><br><span class="hljs-attr">customDomains</span> = [<span class="hljs-string">&quot;www.yourdomain.com&quot;</span>]<br><br><span class="hljs-section">[[proxies]]</span><br><span class="hljs-attr">name</span> = <span class="hljs-string">&quot;web2&quot;</span><br><span class="hljs-attr">type</span> = <span class="hljs-string">&quot;http&quot;</span><br><span class="hljs-attr">localPort</span> = <span class="hljs-number">8080</span><br><span class="hljs-attr">customDomains</span> = [<span class="hljs-string">&quot;yourIp&quot;</span>]<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>LINUX</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+      <tag>frp</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>递归函数</title>
+    <link href="/2024/03/20/study/%E9%80%92%E5%BD%92%E5%87%BD%E6%95%B0/"/>
+    <url>/2024/03/20/study/%E9%80%92%E5%BD%92%E5%87%BD%E6%95%B0/</url>
+    
+    <content type="html"><![CDATA[<h2 id="递归函数"><a href="#递归函数" class="headerlink" title="递归函数"></a>递归函数</h2><h3 id="什么是递归？"><a href="#什么是递归？" class="headerlink" title="什么是递归？"></a>什么是递归？</h3><p>递归函数就是在函数内部，直接或者间接调用自己</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">func</span>(<span class="hljs-params"><span class="hljs-keyword">let</span> n</span>) &#123;<br>    <span class="hljs-keyword">if</span> (n === <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-keyword">return</span> n;<br>    &#125;<br>    <span class="hljs-comment">// 自己调用自己</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">func</span>(n - <span class="hljs-number">1</span>) * n;<br>&#125;<br></code></pre></td></tr></table></figure><h3 id="递归调用方式有几种？"><a href="#递归调用方式有几种？" class="headerlink" title="递归调用方式有几种？"></a>递归调用方式有几种？</h3><ul><li>直接调用<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">func</span>(<span class="hljs-params"><span class="hljs-keyword">let</span> n</span>) &#123;<br>    <span class="hljs-keyword">if</span> (n === <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-keyword">return</span> n;<br>    &#125;<br>    <span class="hljs-comment">// 自己调用自己</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">func</span>(n - <span class="hljs-number">1</span>) * n;<br>&#125;<br></code></pre></td></tr></table></figure></li><li>间接调用<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">fun1</span>(<span class="hljs-params">a</span>) &#123;<br>    <span class="hljs-keyword">let</span> b = <span class="hljs-title function_">fun2</span>(a + <span class="hljs-number">1</span>);<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">fun2</span>(<span class="hljs-params">s</span>) &#123;<br>    <span class="hljs-keyword">let</span> c = <span class="hljs-title function_">fun1</span>(s - <span class="hljs-number">1</span>);<br>&#125;<br></code></pre></td></tr></table></figure></li></ul><h3 id="如何设计递归函数？"><a href="#如何设计递归函数？" class="headerlink" title="如何设计递归函数？"></a>如何设计递归函数？</h3><ol><li>递归函数，必须要有一个结束条件</li><li>在递归中，一个问题可以被分解为多个子问题，子问题是父问题的实例，可以用相同的方法解决</li><li>在递归中，每次递归都要向结束条件靠拢</li><li>递归函数，每次递归都需要有一个返回值，并且用递归的值来计算</li></ol><h3 id="递归函数有什么缺点？"><a href="#递归函数有什么缺点？" class="headerlink" title="递归函数有什么缺点？"></a>递归函数有什么缺点？</h3><ol><li>空间效率低，每次函数进行递归，都会创建一个新的函数实例</li><li>可能导致栈溢出，递归次数越多，内存消耗越大</li><li>递归可能会重复计算，子问题基本相同</li></ol><h3 id="如何优化递归函数？"><a href="#如何优化递归函数？" class="headerlink" title="如何优化递归函数？"></a>如何优化递归函数？</h3><ul><li>使用尾递归</li><li>循环代替递归</li><li>使用动态规划&#x2F;记忆化技术</li></ul>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>adb命令</title>
+    <link href="/2023/11/26/study/adb%E5%91%BD%E4%BB%A4/"/>
+    <url>/2023/11/26/study/adb%E5%91%BD%E4%BB%A4/</url>
+    
+    <content type="html"><![CDATA[<h2 id="adb命令"><a href="#adb命令" class="headerlink" title="adb命令"></a>adb命令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">获取设备标识</span><br>adb devices<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>adb</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Git命令</title>
+    <link href="/2023/07/19/study/Git%E5%91%BD%E4%BB%A4/"/>
+    <url>/2023/07/19/study/Git%E5%91%BD%E4%BB%A4/</url>
+    
+    <content type="html"><![CDATA[<h2 id="初始化仓库"><a href="#初始化仓库" class="headerlink" title="初始化仓库"></a>初始化仓库</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">使当前目录初始化为git仓库，同时会生成一个.git隐藏的文件夹，或者重新初始化现有仓库</span><br>git init<br><span class="hljs-meta prompt_"># </span><span class="language-bash">指定一个目录成为git仓库，同时会生成一个.git隐藏的文件夹</span><br>git init newRepo<br></code></pre></td></tr></table></figure><h2 id="克隆远程仓库"><a href="#克隆远程仓库" class="headerlink" title="克隆远程仓库"></a>克隆远程仓库</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">克隆仓库</span><br>git clone &lt;repo&gt;<br><span class="hljs-meta prompt_"># </span><span class="language-bash">将仓库克隆到指定目录</span><br>git clone &lt;repo&gt; &lt;directory&gt;<br></code></pre></td></tr></table></figure><h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">上传远程代码合并</span><br>git push<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">下载远程代码合并</span><br>git pull<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">将文件添加到暂存区</span><br>git add<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看仓库的当前状态,显示有变更的文件</span><br>git status<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">比较文件的不同,即暂存区和工作区的差异</span><br>git diff<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">将文件添加到暂存区</span><br>git commit<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">回退版本</span><br>git reset<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">将文件从暂存区和工作区删除</span><br>git rm<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">移动或者重命名工作区文件</span><br>git mv<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">切换分支</span><br>git checkout<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看提交日志</span><br>git log<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看指定文件的修改日志</span><br>git blame &lt;file&gt;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">命令<span class="hljs-built_in">help</span></span><br>git &lt;commond&gt; help<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">合并分支，合并到当前分支</span><br>git merge [目标分支]<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>git</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>leetcode刷题记录</title>
+    <link href="/2023/07/18/study/leetcode%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/"/>
+    <url>/2023/07/18/study/leetcode%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/</url>
+    
+    <content type="html"><![CDATA[<h2 id="两数之和"><a href="#两数之和" class="headerlink" title="两数之和"></a>两数之和</h2><p>给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。</p><p>示例 1：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">输入：nums = [2,7,11,15], target = 9<br>输出：[0,1]<br>解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。<br></code></pre></td></tr></table></figure><p>示例 2：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">输入：nums = [3,2,4], target = 6<br>输出：[1,2]<br></code></pre></td></tr></table></figure><p>示例 3：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">输入：nums = [3,3], target = 6<br>输出：[0,1]<br></code></pre></td></tr></table></figure><span id="more"></span><ul><li>解法一：暴力求解</li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">twoSum</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>], target: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]:<br>    l = <span class="hljs-built_in">len</span>(nums)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(l):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i+<span class="hljs-number">1</span>, l):<br>            <span class="hljs-keyword">if</span> nums[i] + nums[j] == target:<br>                <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>[]&#123;i, j&#125;<br>    <span class="hljs-keyword">return</span> []<br></code></pre></td></tr></table></figure><ul><li>解法二：哈希表映射求解</li></ul><blockquote><p>通过查找target-num的值是否存在hashTable中<br>如果不存在，则存入key-value –&gt; num-i<br>如果存在，则去除target-num值的i值，与当前的i值</p></blockquote><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">twoSum</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>], target: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]:<br>    hashTable = <span class="hljs-built_in">dict</span>()<br>    <span class="hljs-keyword">for</span> i, num <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(nums):<br>        <span class="hljs-keyword">if</span> target - num <span class="hljs-keyword">in</span> hashTable:<br>            <span class="hljs-keyword">return</span> [hashTable[target - num], i]<br>        hashTable[num[i]] = i<br>    <span class="hljs-keyword">return</span> []<br><br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>刷题</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>软件测试</title>
+    <link href="/2023/07/13/study/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/"/>
+    <url>/2023/07/13/study/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/</url>
+    
+    <content type="html"><![CDATA[<h2 id="接口测试流程"><a href="#接口测试流程" class="headerlink" title="接口测试流程"></a>接口测试流程</h2><ul><li>需求评审</li><li>接口文档分析</li><li>设计测试用例</li><li>进行接口测试</li><li>缺陷的管理和追踪</li><li>生成测试报告</li></ul><h2 id="接口文档分析"><a href="#接口文档分析" class="headerlink" title="接口文档分析"></a>接口文档分析</h2><ul><li>接口地址</li><li>请求方式</li><li>请求数据类型</li><li>响应数据类型</li><li>接口描述</li><li>请求参数</li><li>响应状态</li><li>响应参数</li></ul><h2 id="接口测试业务"><a href="#接口测试业务" class="headerlink" title="接口测试业务"></a>接口测试业务</h2><h3 id="单接口"><a href="#单接口" class="headerlink" title="单接口"></a>单接口</h3><ul><li>正向测试<ul><li>必填参数组合</li><li>必填+非必填参数组合</li></ul></li><li>反向测试<ul><li>功能异常</li><li>数据异常</li><li>参数异常</li></ul></li></ul><h3 id="多接口"><a href="#多接口" class="headerlink" title="多接口"></a>多接口</h3><ul><li>从功能业务用例转化</li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>测试</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Linux的组和用户</title>
+    <link href="/2023/06/29/LINUX/Linux%E7%9A%84%E7%BB%84%E5%92%8C%E7%94%A8%E6%88%B7/"/>
+    <url>/2023/06/29/LINUX/Linux%E7%9A%84%E7%BB%84%E5%92%8C%E7%94%A8%E6%88%B7/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>查看用户组和用户</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat /etc/group<br>cat /etc/passwd<br></code></pre></td></tr></table></figure><blockquote><p>删除用户组和用户</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">删除用户组</span><br>groupdel 用户组<br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除用户，不删除用户数据</span><br>userdel 用户<br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除用户，删除用户数据</span><br>userdel -r 用户<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>LINUX</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>hexo安装</title>
+    <link href="/2023/06/29/computer/hexo%E5%AE%89%E8%A3%85/"/>
+    <url>/2023/06/29/computer/hexo%E5%AE%89%E8%A3%85/</url>
+    
+    <content type="html"><![CDATA[<h2 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h2><blockquote><p>安装Git</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">apt-get -y install git<br></code></pre></td></tr></table></figure><blockquote><p>配置Git</p></blockquote><span id="more"></span><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">git config global user.name=&quot;testname&quot;<br>git config global user.email=&quot;test@email.com&quot;<br></code></pre></td></tr></table></figure><h2 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h2><blockquote><p>检测npm和node是否安装</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm -v<br>node -v<br></code></pre></td></tr></table></figure><blockquote><p>升级npm版本</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install npm -g<br></code></pre></td></tr></table></figure><blockquote><p>设置npm淘宝镜像源，查看npm镜像源</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">配置当前安装包的镜像源</span><br>npm install -g &lt;安装包名&gt; --registry=https://registry.npm.taobao.org<br><span class="hljs-meta prompt_"># </span><span class="language-bash">本次安装为当前配置的镜像源</span><br>npm install --registry=https://registry.npm.taobao.org   <br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看当前镜像源</span><br>npm config get registry<br><span class="hljs-meta prompt_"># </span><span class="language-bash">修改~/.npmrc，加入以下内容</span><br>npm config set registry https://registry.npm.taobao.org   <br>registry = https://registry.npm.taobao.org   <br></code></pre></td></tr></table></figure><blockquote><p>使用cnpm更换npm</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install -g cnpm --registry=https://registry.npm.taobao.org   <br></code></pre></td></tr></table></figure><blockquote><p>查看全局安装的包</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm -g list<br></code></pre></td></tr></table></figure><h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install -g hexo-cli<br><span class="hljs-meta prompt_"># </span><span class="language-bash">局部安装hexo</span><br>npm install hexo<br><span class="hljs-meta prompt_">#</span><span class="language-bash">linux</span><br>echo &#x27;PATH=&quot;$PATH:./node_modules/.bin&quot;&#x27; &gt;&gt; ~/.profile<br></code></pre></td></tr></table></figure><h2 id="安装Hexo主题"><a href="#安装Hexo主题" class="headerlink" title="安装Hexo主题"></a>安装Hexo主题</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone https://github.com/theme-next/hexo-theme-next /hexo/themes/next<br></code></pre></td></tr></table></figure><h2 id="配置Hexo"><a href="#配置Hexo" class="headerlink" title="配置Hexo"></a>配置Hexo</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">修改_config.xml</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">主题</span><br>theme: next<br><span class="hljs-meta prompt_"># </span><span class="language-bash">github部署</span><br>deploy:<br>  type: git<br>  repo: git@github.com:github名字/仓库名字<br>  branch: master<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>computer</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>blog</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>香橙派</title>
+    <link href="/2023/06/16/computer/%E9%A6%99%E6%A9%99%E6%B4%BE/"/>
+    <url>/2023/06/16/computer/%E9%A6%99%E6%A9%99%E6%B4%BE/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>香橙派有两个温度传感器，一个cpu一个gpu分别是zone0和zone1</p></blockquote><h2 id="查看是什么设备"><a href="#查看是什么设备" class="headerlink" title="查看是什么设备"></a>查看是什么设备</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat /sys/class/thermal/thermal_zone0/type cpu_thermal_zone0/type<br></code></pre></td></tr></table></figure><h2 id="查看设备温度"><a href="#查看设备温度" class="headerlink" title="查看设备温度"></a>查看设备温度</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat /sys/class/thermal/thermal_zone0/type cpu_thermal_zone0/temp<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>computer</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+      <tag>Orange Pi</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>解除powershell默认不能运行脚本</title>
+    <link href="/2023/06/14/computer/%E8%A7%A3%E9%99%A4powershell%E9%BB%98%E8%AE%A4%E4%B8%8D%E8%83%BD%E8%BF%90%E8%A1%8C%E8%84%9A%E6%9C%AC/"/>
+    <url>/2023/06/14/computer/%E8%A7%A3%E9%99%A4powershell%E9%BB%98%E8%AE%A4%E4%B8%8D%E8%83%BD%E8%BF%90%E8%A1%8C%E8%84%9A%E6%9C%AC/</url>
+    
+    <content type="html"><![CDATA[<h2 id="PowerShell不能运行脚本"><a href="#PowerShell不能运行脚本" class="headerlink" title="PowerShell不能运行脚本"></a>PowerShell不能运行脚本</h2><p>因为PowerSehll默认禁止运行脚本的<br>具体可以参考微软的说明[<a href="https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3%5D">https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3]</a></p><h2 id="解除powershell默认不能运行脚本"><a href="#解除powershell默认不能运行脚本" class="headerlink" title="解除powershell默认不能运行脚本"></a>解除powershell默认不能运行脚本</h2><p>在PowerShell管理员模式输入</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">set-ExecutionPolicy RemoteSigned<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>computer</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>powershell</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Git配置</title>
+    <link href="/2023/05/30/study/Git%E9%85%8D%E7%BD%AE/"/>
+    <url>/2023/05/30/study/Git%E9%85%8D%E7%BD%AE/</url>
+    
+    <content type="html"><![CDATA[<h2 id="设置机器的git的用户信息"><a href="#设置机器的git的用户信息" class="headerlink" title="设置机器的git的用户信息"></a>设置机器的git的用户信息</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">git config --global user.name &#x27;username&#x27;<br>git config --global user.email &#x27;youremail@email.com&#x27;<br></code></pre></td></tr></table></figure><span id="more"></span><h2 id="生成id-rsa密钥和id-rsa-pub公开密钥"><a href="#生成id-rsa密钥和id-rsa-pub公开密钥" class="headerlink" title="生成id_rsa密钥和id_rsa.pub公开密钥"></a>生成id_rsa密钥和id_rsa.pub公开密钥</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh-keygen -t rsa<br></code></pre></td></tr></table></figure><p>密钥和公开密钥信息存储在<code>&#39;~/.ssh&#39;</code>目录中</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">.ssh/<br>├── authorized_keys<br>├── id_rsa<br>├── id_rsa.pub<br>└── known_hosts<br></code></pre></td></tr></table></figure><p>authorized_keys: 免密登录&#x2F;密钥登录<br>id_rsa: 密钥<br>id_rsa.pub: 公开密钥<br>known_hosts: 记录登录机器信息</p><h2 id="配置github"><a href="#配置github" class="headerlink" title="配置github"></a>配置github</h2><ol><li>在github设置界面打开SSH and GPG keys页面</li><li>点击new SSH keys</li><li>填写Title,任意名称</li><li>Key type默认即可</li><li>将<code>id_rsa.pub</code>中的内容至Key内容框中</li></ol><h2 id="测试机器是否连通github"><a href="#测试机器是否连通github" class="headerlink" title="测试机器是否连通github"></a>测试机器是否连通github</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh -t git@github.com<br></code></pre></td></tr></table></figure><h2 id="配置免密登录"><a href="#配置免密登录" class="headerlink" title="配置免密登录"></a>配置免密登录</h2><ol><li>将当前机器的id_rsa.pub文件，传给目标机器<code>scp -P 22 ~/.ssh/id_rsa.pub root@ip地址:~/地址</code></li><li>将公开密钥写入<code>authorized_keys</code>,<code>cat ~/地址/id_rsa.pub &gt; ~/ssh/authorized_keys</code></li><li>当前使用ssh命令登录目标机器<code>ssh root@ip地址</code></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>git</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>删除node_modules</title>
+    <link href="/2023/05/22/computer/%E5%88%A0%E9%99%A4node_modules/"/>
+    <url>/2023/05/22/computer/%E5%88%A0%E9%99%A4node_modules/</url>
+    
+    <content type="html"><![CDATA[<h2 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h2><p>1、全局安装 rimraf</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install rimraf -g<br></code></pre></td></tr></table></figure><p>2、使用rimraf</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">rimraf node_modules<br></code></pre></td></tr></table></figure><h2 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h2><p>直接删除nodmodules整个目录</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>computer</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>node.js</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>通过frp工具远程控制windows桌面</title>
+    <link href="/2023/04/29/computer/%E9%80%9A%E8%BF%87frp%E5%B7%A5%E5%85%B7%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6windows%E6%A1%8C%E9%9D%A2/"/>
+    <url>/2023/04/29/computer/%E9%80%9A%E8%BF%87frp%E5%B7%A5%E5%85%B7%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6windows%E6%A1%8C%E9%9D%A2/</url>
+    
+    <content type="html"><![CDATA[<h2 id="frp是什么？"><a href="#frp是什么？" class="headerlink" title="frp是什么？"></a>frp是什么？</h2><p>frp 是一个专注于内网穿透的高性能的反向代理应用，支持 TCP、UDP、HTTP、HTTPS 等多种协议。可以将内网服务以安全、便捷的方式通过具有公网 IP 节点的中转暴露到公网。</p><h2 id="如何通过frp远程控制windows？"><a href="#如何通过frp远程控制windows？" class="headerlink" title="如何通过frp远程控制windows？"></a>如何通过frp远程控制windows？</h2><blockquote><p>需要的环境如下：</p><p>一台具有公网ip的云服务器——服务端</p><p>一台搭载windows系统的机器——客户端</p><p>一台测试机——手机、平板、电脑</p></blockquote><span id="more"></span><h2 id="服务端配置"><a href="#服务端配置" class="headerlink" title="服务端配置"></a>服务端配置</h2><h2 id="下载工具"><a href="#下载工具" class="headerlink" title="下载工具"></a>下载工具</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">下载frp工具压缩包</span><br>wget https://github.com/fatedier/frp/releases/download/v0.48.0/frp_0.48.0_linux_amd64.tar.gz<br><span class="hljs-meta prompt_"># </span><span class="language-bash">解压</span><br>tar -zxvf frp_0.48.0_linux_amd64.tar.gz<br><span class="hljs-meta prompt_"># </span><span class="language-bash">重命名文件夹</span><br>mv frp_0.48.0_linux_amd64 frp<br><span class="hljs-meta prompt_"># </span><span class="language-bash">移动文件夹至/usr/local/</span><br>mv frp /usr/local/<br><span class="hljs-meta prompt_"># </span><span class="language-bash">进入frp文件夹</span><br>cd /usr/local/frp/<br></code></pre></td></tr></table></figure><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">frp的目录结构如下所示</span><br>.<br>├── frpc<br>├── frpc_full.ini<br>├── frpc.ini<br>├── frps<br>├── frps_full.ini<br>├── frps.ini<br>└── LICENSE<br></code></pre></td></tr></table></figure><h2 id="修改frp配置"><a href="#修改frp配置" class="headerlink" title="修改frp配置"></a>修改frp配置</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">修改frps.ini文件</span><br>vim frps.ini<br></code></pre></td></tr></table></figure><ul><li>frps.ini文件</li></ul><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell">[common]<br><span class="hljs-meta prompt_"># </span><span class="language-bash">监听服务器本地的端口</span><br>bind_port = 7000<br><span class="hljs-meta prompt_"># </span><span class="language-bash">日志文件存放位置</span><br>log_file = /var/log/frps.log<br><span class="hljs-meta prompt_"># </span><span class="language-bash">用于客户端和服务端连接的口令</span><br>token = 123456<br><span class="hljs-meta prompt_"># </span><span class="language-bash">以下是web端控制台</span><br>dashboard_user = admin ;控制台的用户名<br>dashboard_pwd = password ;控制台的密码<br>dashboard_port = 7500 ;控制台的端口<br></code></pre></td></tr></table></figure><h2 id="启动frps服务测试"><a href="#启动frps服务测试" class="headerlink" title="启动frps服务测试"></a>启动frps服务测试</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">临时启动</span><br>./frps -c frps.ini<br><span class="hljs-meta prompt_"># </span><span class="language-bash">后台运行</span><br>nohup ./frps -c frps.ini &amp; &gt; frp.log<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">通过公网ip地址:7500 查看Web端控制台是否启动成功</span><br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">停止<span class="hljs-built_in">nohup</span>后台运行</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看frps进程号PID</span><br>ps -def | grep frp<br><span class="hljs-meta prompt_"># </span><span class="language-bash">杀死进程</span><br>kill -9 进程号PID<br></code></pre></td></tr></table></figure><h2 id="注册为systemctl服务"><a href="#注册为systemctl服务" class="headerlink" title="注册为systemctl服务"></a>注册为systemctl服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">创建systemctl配置文件</span><br>vim frps.service<br></code></pre></td></tr></table></figure><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs shell">[Unit]<br>Description = frp server<br>After = network.target syslog.target<br>Wants = network.target<br><br>[Service]<br>Type = simple<br><span class="hljs-meta prompt_"># </span><span class="language-bash">frp文件地址，由于frps.ini的日志使用了相对地址，所以WorkingDirectory要指定frp目录</span><br>WorkingDirectory=/usr/local/frp<br>ExecStart = /usr/local/frp/frps -c /usr/local/frp/frps.ini<br><br>[Install]<br>WantedBy = multi-user.target<br></code></pre></td></tr></table></figure><p>将<code>frps.service</code>复制到<code>/etc/systemd/system</code>目录下</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cp frps.service /etc/systemd/system<br></code></pre></td></tr></table></figure><p>启动systemctl的frps服务</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">设置开机自启</span><br>systemctl enable frps<br><span class="hljs-meta prompt_"># </span><span class="language-bash">启动frps服务</span><br>systemctl start frps<br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看运行状态</span><br>systemctl status frps<br></code></pre></td></tr></table></figure><p>通过查看端口，查看服务是否启动</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">netstat -lntup | grep 7000<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">看到如下里面，服务即启动成功</span><br>tcp6       0      0 :::7000                 :::*                    LISTEN      2137/frps<br></code></pre></td></tr></table></figure><h2 id="客户端配置"><a href="#客户端配置" class="headerlink" title="客户端配置"></a>客户端配置</h2><h3 id="下载frp工具"><a href="#下载frp工具" class="headerlink" title="下载frp工具"></a>下载frp工具</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-comment"># 下载frp</span><br>https://github.com/fatedier/frp/releases/download/v0.<span class="hljs-number">48.0</span>/frp_0.<span class="hljs-number">48.0</span>_linux_amd64.tar.gz<br></code></pre></td></tr></table></figure><ul><li>解压后目录结构如图所示</li></ul><p><img src="http://img.lingandrx.space/image-20230429203637429.png" alt="image-20230429203637429"></p><h2 id="修改frpc配置"><a href="#修改frpc配置" class="headerlink" title="修改frpc配置"></a>修改frpc配置</h2><p>修改<code>frpc.ini</code>文件</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">[common]<br><span class="hljs-meta prompt_"># </span><span class="language-bash">服务器公网ip</span><br>server_addr = 127.0.0.1<br><span class="hljs-meta prompt_"># </span><span class="language-bash">服务器开启的端口</span><br>server_port = 7000<br><span class="hljs-meta prompt_"># </span><span class="language-bash">用于客户端和服务端连接的口令</span><br>token = 123456<br><br>[3389]<br>type = tcp<br>local_ip = 127.0.0.1<br><span class="hljs-meta prompt_"># </span><span class="language-bash">windows远程控制端口</span><br>local_port = 3389<br><span class="hljs-meta prompt_"># </span><span class="language-bash">远程访问端口</span><br>remote_port = 3214<br></code></pre></td></tr></table></figure><h2 id="启动frpc"><a href="#启动frpc" class="headerlink" title="启动frpc"></a>启动frpc</h2><h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">在cmd命令行模式下进行</span><br>cd */frp_0.47.0_windows_amd64<br>frpc -c frpc.ini<br></code></pre></td></tr></table></figure><h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>创建<code>run.bat</code>文件,并修改<code>run.bat</code>内容</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">@echo off<br>if &quot;%1&quot; == &quot;h&quot; goto begin<br>mshta vbscript:createobject(&quot;wscript.shell&quot;).run(&quot;&quot;&quot;%~nx0&quot;&quot; h&quot;,0)(window.close)&amp;&amp;exit<br>:begin<br>REM<br>cd frp所在路径<br>frpc -c frpc.ini<br>exit<br></code></pre></td></tr></table></figure><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">win+r快捷键打开运行，输入shell:starup，打开启动文件夹<br></code></pre></td></tr></table></figure><p>将<code>run.bat</code>的快捷方式放入该文件夹内，即可开机自启，重启电脑生效。</p><h2 id="远程连接Windows"><a href="#远程连接Windows" class="headerlink" title="远程连接Windows"></a>远程连接Windows</h2><p>通过Windows远程连接访问客户端</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">访问地址公网ip+客户端配置的远程端口</span><br>公网ip:3214<br><span class="hljs-meta prompt_"># </span><span class="language-bash">客户端用户名</span><br>user<br><span class="hljs-meta prompt_"># </span><span class="language-bash">客户端密码</span><br>123456<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>computer</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+      <tag>frp</tag>
+      
+      <tag>windows</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
